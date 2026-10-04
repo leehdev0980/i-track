@@ -2,6 +2,9 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+ARG JWT_SECRET
+ENV JWT_SECRET=$JWT_SECRET
+
 COPY package*.json ./
 
 RUN npm ci
