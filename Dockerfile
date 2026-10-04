@@ -4,6 +4,7 @@ WORKDIR /app
 
 ARG JWT_SECRET
 ENV JWT_SECRET=$JWT_SECRET
+ENV DATABASE_URL="mysql://build:build@localhost:3306/build"
 
 COPY package*.json ./
 
