@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Role {
+  ADMIN
+  STANDARD
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum Status {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         Role      @default(STANDARD)
+  createdAt    DateTime  @default(now())
+
+  createdIssues  Issue[]   @relation("CreatedIssues")
+  assignedIssues Issue[]   @relation("AssignedIssues")
+  comments       Comment[]
+}
+
+model Issue {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String   @db.Text
+  priority    Priority
+  status      Status   @default(OPEN)
+
+  createdById Int
+  assignedToId Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdBy  User      @relation("CreatedIssues", fields: [createdById], references: [id])
+  assignedTo User?     @relation("AssignedIssues", fields: [assignedToId], references: [id])
+  comments   Comment[]
+
+  @@index([createdById])
+  @@index([assignedToId])
+  @@index([status])
+  @@index([priority])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  userId    Int
+  issueId   Int
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  issue Issue @relation(fields: [issueId], references: [id])
+
+  @@index([userId])
+  @@index([issueId])
+}
