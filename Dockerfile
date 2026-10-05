@@ -32,4 +32,7 @@ COPY --from=builder /app/package.json ./package.json
 
 EXPOSE 10000
 
+ENV PORT=10000
+ENV HOSTNAME=0.0.0.0
+
 CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
