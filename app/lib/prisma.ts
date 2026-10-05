@@ -15,14 +15,18 @@ function createPrismaClient() {
   const url = new URL(databaseUrl);
 
   const adapter = new PrismaMariaDb({
-    host: url.hostname,
-    port: url.port ? Number(url.port) : 3306,
-    user: decodeURIComponent(url.username),
-    password: decodeURIComponent(url.password),
-    database: url.pathname.replace("/", ""),
-    ssl: true,
-    connectionLimit: 5,
-  });
+  host: url.hostname,
+  port: url.port ? Number(url.port) : 3306,
+  user: decodeURIComponent(url.username),
+  password: decodeURIComponent(url.password),
+  database: url.pathname.replace("/", ""),
+  ssl: {
+    rejectUnauthorized: false,
+  },
+  connectionLimit: 3,
+  connectTimeout: 30000,
+  acquireTimeout: 30000,
+});
 
   return new PrismaClient({ adapter });
 }
